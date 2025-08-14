@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<title>Købelov Quiz</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 650px; margin: 20px auto; padding: 10px; }
+  .question { font-weight: bold; margin-bottom: 10px; }
+  .answer { margin: 8px 0; }
+  button { margin-top: 15px; padding: 8px 15px; font-size: 1em; }
+  .feedback { margin-top: 15px; font-weight: bold; }
+  .correct { color: green; }
+  .incorrect { color: red; }
+  .explanation { margin-top: 10px; font-style: italic; }
+  #next-btn { display: none; }
+</style>
+</head>
+<body>
+
+<h2>Købelov Quiz</h2>
+<div id="quiz-container">
+  <div id="question" class="question"></div>
+  <form id="quiz-form"></form>
+  <button id="check-btn">Tjek svar</button>
+  <button id="next-btn">Næste spørgsmål</button>
+  <div id="feedback" class="feedback"></div>
+  <div id="explanation" class="explanation"></div>
+</div>
+
+<script>
+  const quizData = [
+    {
+      question: "En privatperson køber en ny telefon hos en elektronikbutik. Hvilken type køb er der tale om ifølge købeloven, og hvilken paragraf definerer denne type?",
+      answers: [
+        { text: "Handelskøb (§ 4)", correct: false },
+        { text: "Forbrugerkøb (§ 4a)", correct: true },
+        { text: "Civilt køb (mellem private)", correct: false }
+      ],
+      explanation: "Købet er et forbrugerkøb, fordi en erhvervsdrivende sælger til en privatperson. Dette er defineret i købelovens § 4a."
+    },
+    {
+      question: "Hvad er hovedreglen for tidspunktet for risikoens overgang ved køb af løsøre ifølge købeloven?",
+      answers: [
+        { text: "Risikoen går over ved aftalens indgåelse (§ 16)", correct: false },
+        { text: "Risikoen går over ved levering (§ 16)", correct: true },
+        { text: "Risikoen går over ved betaling (§ 16)", correct: false }
+      ],
+      explanation: "Ifølge købelovens § 16 går risikoen over på køberen, når varen leveres."
+    },
+    {
+      question: "En køber opdager en mangel ved varen. Inden for hvor lang tid skal køberen normalt reklamere for at bevare sine rettigheder efter købeloven?",
+      answers: [
+        { text: "Inden for 2 år efter levering (§ 78)", correct: false },
+        { text: "Inden for rimelig tid efter at manglen er opdaget (§ 80)", correct: true },
+        { text: "Inden for 6 måneder efter levering (§ 77)", correct: false }
+      ],
+      explanation: "Køber skal reklamere inden for en rimelig tid efter, at manglen er opdaget, jf. købelovens § 80."
+    },
+    {
+      question: "Hvad kan køber kræve, hvis der foreligger en væsentlig mangel ved varen efter købeloven?",
+      answers: [
+        { text: "Afhjælpning eller omlevering (§ 36)", correct: true },
+        { text: "Gratis reparation hos tredjemand uden samtykke", correct: false },
+        { text: "Nedsat pris uden yderligere krav", correct: false }
+      ],
+      explanation: "Ved væsentlig mangel kan køber kræve afhjælpning eller omlevering jf. købelovens § 36."
+    },
+    {
+      question: "Hvornår kan sælger hæve købet ved købers forsinkelse ifølge købeloven?",
+      answers: [
+        { text: "Hvis forsinkelsen er væsentlig (§ 62)", correct: true },
+        { text: "Hvis forsinkelsen varer mere end 3 dage (§ 62)", correct: false },
+        { text: "Hvis forsinkelsen skyldes force majeure (§ 62)", correct: false }
+      ],
+      explanation: "Sælger kan hæve købet, hvis forsinkelsen fra købers side er væsentlig, jf. § 62."
+    }
+  ];
+
+  let currentQuestionIndex = 0;
+
+  const questionEl = document.getElementById("question");
+  const quizForm = document.getElementById("quiz-form");
+  const checkBtn = document.getElementById("check-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const feedbackEl = document.getElementById("feedback");
+  const explanationEl = document.getElementById("explanation");
+
+  function loadQuestion() {
+    // Clear feedback and explanation
+    feedbackEl.textContent = "";
+    explanationEl.textContent = "";
+    checkBtn.disabled = false;
+    nextBtn.style.display = "none";
+
+    // Load current question
+    const current = quizData[currentQuestionIndex];
+    questionEl.textContent = `Spørgsmål ${currentQuestionIndex + 1}: ${current.question}`;
+
+    // Clear form and add answers
+    quizForm.innerHTML = "";
+    current.answers.forEach((answer, i) => {
+      const label = document.createElement("label");
+      label.classList.add("answer");
+      label.innerHTML = `<input type="radio" name="answer" value="${i}"> ${answer.text}`;
+      quizForm.appendChild(label);
+      quizForm.appendChild(document.createElement("br"));
+    });
+  }
+
+  checkBtn.addEventListener("click", () => {
+    const selected = quizForm.querySelector('input[name="answer"]:checked');
+    if (!selected) {
+      alert("Vælg venligst et svar før du tjekker.");
+      return;
+    }
+    checkBtn.disabled = true;
+    nextBtn.style.display = "inline-block";
+
+    const answerIndex = parseInt(selected.value);
+    const current = quizData[currentQuestionIndex];
+    const isCorrect = current.answers[answerIndex].correct;
+
+    if (isCorrect) {
+      feedbackEl.textContent = "Korrekt!";
+      feedbackEl.className = "feedback correct";
+    } else {
+      feedbackEl.textContent = "Forkert.";
+      feedbackEl.className = "feedback incorrect";
+    }
+
+    explanationEl.textContent = current.explanation;
+  });
+
+  nextBtn.addEventListener("click", () => {
+    currentQuestionIndex++;
+    if (currentQuestionIndex >= quizData.length) {
+      quizContainer.innerHTML = "<h3>Du har gennemført quizzen! Godt klaret.</h3>";
+    } else {
+      loadQuestion();
+    }
+  });
+
+  // Start quiz
+  const quizContainer = document.getElementById("quiz-container");
+  loadQuestion();
+</script>
+
+</body>
+</html>
